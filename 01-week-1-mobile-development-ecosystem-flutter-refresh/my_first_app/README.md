@@ -1,17 +1,33 @@
-# my_first_app
+# Tugas Flutter
 
-A new Flutter project.
+## Praktikum 5
 
-## Getting Started
+Semua screenshot hasil praktikum terdapat pada folder `screenshots`.
 
-This project is a starting point for a Flutter application.
+## Refleksi
 
-A few resources to get you started if this is your first Flutter project:
+- **Kapan native lebih tepat digunakan daripada cross-platform?**
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+  Menurut saya, native lebih tepat digunakan ketika aplikasi membutuhkan performa yang lebih maksimal atau membutuhkan akses langsung ke fitur tertentu dari perangkat dan sistem operasi.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  Contohnya:
+
+  - Aplikasi dengan kebutuhan performa tinggi seperti game atau aplikasi dengan proses grafis yang berat.
+  - Aplikasi yang membutuhkan akses ke fitur hardware seperti kamera, Bluetooth, NFC, GPS, dan sensor.
+  - Aplikasi yang membutuhkan integrasi khusus dengan sistem operasi.
+  - Ketika fitur terbaru Android atau iOS harus langsung digunakan.
+  - Ketika tampilan aplikasi harus benar-benar mengikuti standar dari platform tertentu.
+
+- **Bagaimana perubahan state berhubungan dengan widget tree dan UI deklaratif?**
+
+  - Tampilan pada Flutter dibuat berdasarkan state yang ada.
+  - Ketika state berubah, Flutter akan memperbarui widget yang berkaitan dengan perubahan tersebut.
+  - Dengan konsep UI deklaratif, developer cukup menentukan tampilan berdasarkan kondisi atau state yang sedang aktif.
+
+- **Mengapa commit kecil dengan pesan yang jelas bermanfaat untuk kerja tim dan portfolio?**
+
+  - Commit kecil membuat riwayat perubahan lebih mudah dibaca dan dipahami.
+  - Lebih mudah melakukan pengecekan kode dan mencari sumber kesalahan.
+  - Jika terjadi masalah, perubahan tertentu bisa lebih mudah dikembalikan.
+  - Pesan commit yang jelas membantu anggota tim mengetahui tujuan dari setiap perubahan.
+  - Riwayat commit yang rapi juga membuat portfolio terlihat lebih terstruktur.
