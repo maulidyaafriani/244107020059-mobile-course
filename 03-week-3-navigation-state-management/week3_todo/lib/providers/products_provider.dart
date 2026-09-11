@@ -1,15 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProductsNotifier extends AsyncNotifier<List<String>> {
-  static bool _failedOnce = false;
-
   @override
   Future<List<String>> build() async {
     await Future.delayed(const Duration(seconds: 2)); // simulasi network
-    if (!_failedOnce) {
-      _failedOnce = true;
-      throw Exception('Gagal terhubung ke server');
-    }
     return ['Keyboard', 'Mouse', 'Monitor'];
   }
 
