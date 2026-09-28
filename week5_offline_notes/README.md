@@ -1,8 +1,5 @@
 ## AI Verification Checklist
 
-Sebelum rekomendasi AI (lihat `docs/ai-output.md`) diterima, berikut verifikasi
-saya terhadap tiap poin:
-
 **1. Apakah AI menempatkan daftar catatan di SharedPreferences?**
 Tidak. AI merekomendasikan sqflite untuk catatan, SharedPreferences hanya
 untuk preferensi tema. Rekomendasi ini diterima karena sesuai dengan
