@@ -187,3 +187,14 @@ lib/
 │           ├── providers/auth_providers.dart
 │           └── pages/login_page.dart
 └── routes.dart
+
+
+## Hasil Verifikasi (setelah refactor)
+
+| Pemeriksaan | Sebelum | Sesudah |
+|-------------|---------|---------|
+| DI bocor (`Repository(` di providers) | 1 temuan | 0 |
+| Domain bebas framework | - | 0 temuan |
+| Presentation bebas data mentah | 0 | 0 |
+| flutter analyze | - | No issues found |
+| flutter test | - | (isi hasilnya) |
