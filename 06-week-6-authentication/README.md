@@ -151,3 +151,39 @@ Akibatnya:
   `flutter_local_notifications` tidak mendukung web.
 - (Tambahkan perbaikan lain yang kamu lakukan, misalnya validasi rute atau
   penyembunyian token penuh di halaman Debug.)
+
+  JOBSHEET 7
+
+  ## Audit Layer (sebelum refactor)
+
+| File | Layer saat ini | Masalah |
+|------|----------------|---------|
+| pages/home_page.dart | presentation | tidak ada temuan grep |
+| pages/login_page.dart | presentation | tidak ada temuan grep |
+| pages/announcement_page.dart | presentation | tidak ada temuan grep |
+| providers/auth_provider.dart | presentation (state) | baris 9: membuat AuthRepository() langsung (DI bocor) |
+| data/auth_repository.dart | data | interface dan implementasi masih satu kelas |
+| data/api_client.dart | data | OK |
+| data/api_errors.dart | data | perlu dipindah/dipetakan ke Failure di domain |
+| data/token_store.dart | data | OK |
+| messaging/push_service.dart | data (infrastruktur) | OK |
+| router/, routes.dart, main.dart | app/routing | OK |
+
+## Struktur target (fitur: auth)
+
+lib/
+├── core/
+│   └── failures.dart
+├── features/
+│   └── auth/
+│       ├── domain/
+│       │   ├── entities/user.dart
+│       │   ├── repositories/auth_repository.dart   # interface
+│       │   └── usecases/login.dart
+│       ├── data/
+│       │   ├── models/user_model.dart
+│       │   └── repositories/auth_repository_impl.dart
+│       └── presentation/
+│           ├── providers/auth_providers.dart
+│           └── pages/login_page.dart
+└── routes.dart
