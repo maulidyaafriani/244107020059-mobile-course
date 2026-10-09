@@ -198,3 +198,40 @@ lib/
 | Presentation bebas data mentah | 0 | 0 |
 | flutter analyze | - | No issues found |
 | flutter test | - | (isi hasilnya) |
+
+
+
+## Hasil Refactor Clean Architecture
+
+**Tujuan:** memisahkan fitur auth menjadi domain, data, dan presentation.
+
+**Arah dependensi:**
+
+```
+Presentation  ──►  Domain  ◄──  Data
+```
+
+**Fitur penuh:** `auth` (entity `AuthSession`, interface `AuthRepository`, `AuthRepositoryImpl`, use case `Login`, `Failure`, provider DI).
+
+**Hasil tiga grep sterilitas:**
+
+| Grep | Hasil |
+|------|-------|
+| Domain bebas Flutter/Dio/Firebase | kosong |
+| Presentation bebas data mentah | kosong |
+| Instansiasi manual di pages/providers | kosong (sebelumnya 1 temuan) |
+
+**Test:** 2 test lulus (`test/login_test.dart`: sukses dan failure dengan repository palsu).
+
+**Keputusan sadar:** `announcements` belum direfactor karena belum punya alur data; membuat lapisan penuh sekarang adalah over-engineering. Tidak ada `DateFormat` di widget, jadi `core/format.dart` tidak diperlukan.
+
+**Cara menjalankan:** `flutter pub get`, lalu `flutter run -d chrome`.
+
+**Dokumentasi AI Challenge:** lihat folder `docs/`.
+
+## Refleksi
+
+1. **Interface di domain:** agar domain tidak bergantung pada detail (Dio, storage). Kalau dibalik, domain harus meng-import data, sehingga mengganti API atau database ikut merusak aturan bisnis, dan test butuh implementasi nyata.
+2. **Use case vs repository langsung:** use case dibutuhkan saat ada aturan bisnis atau koordinasi lebih dari satu repository. Untuk CRUD satu baris, repository langsung ke notifier cukup.
+3. **Biaya over-engineering:** file dan lapisan bertambah tanpa menambah perilaku, memperlambat tim kecil. Sepadan bila logika tumbuh atau perlu diuji terpisah.
+4. **Usulan AI yang ditolak:** pemindahan `messaging` ke `notifications` dan `app/router` (hanya kosmetik), serta data source terpisah dan lapisan announcements (belum ada backend dan alur data nyata).
