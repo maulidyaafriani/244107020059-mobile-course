@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/api_errors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/browser_notification_test_button.dart';
+import 'package:campus_notify/features/auth/domain/usecases/validate_login_input.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -17,6 +18,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _validator = const ValidateLoginInput();
 
   @override
   void dispose() {
@@ -55,12 +57,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || !value.contains('@')) {
-                        return 'Masukkan email yang valid';
-                      }
-                      return null;
-                    },
+                    validator: _validator.email,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -70,12 +67,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       border: OutlineInputBorder(),
                     ),
                     obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.length < 6) {
-                        return 'Kata sandi minimal 6 karakter';
-                      }
-                      return null;
-                    },
+                    validator: _validator.password,
                   ),
                   if (authState.hasError) ...[
                     const SizedBox(height: 12),
