@@ -211,7 +211,13 @@ Hasil terakhir:
 
 - `flutter analyze`: bersih.
 - `flutter test`: 10 tes lulus.
+- `flutter test test\search_filter_test.dart`: 6 tes pencarian lulus.
 - `dart format --set-exit-if-changed` pada file fitur/tes: bersih.
-- Smoke test manual dilakukan pada Chrome web dengan data sementara `oke baik`.
+- Smoke test manual pada Chrome web: query cocok `OKE` menemukan judul
+  sementara `oke baik`; query tak cocok `BELANJA` menunjukkan empty state;
+  query dikosongkan dengan tombol clear dan query whitespace mengembalikan
+  daftar. Screenshot UI catatan diambil di sesi browser; aplikasi yang
+  tertinggal di sesi ini tidak lagi merespons input, jadi screenshot hasil
+  query tidak tersimpan sebagai file di repository.
 - Hot restart melalui DTD gagal pada Chrome DevTools; aplikasi kemudian
   dijalankan ulang, smoke test dilakukan, dan hot reload berikutnya berhasil.

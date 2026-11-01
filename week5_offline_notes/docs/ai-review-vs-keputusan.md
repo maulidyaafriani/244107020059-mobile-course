@@ -13,7 +13,7 @@ Beri 3 temuan + level blocker/saran + alasan.
 Konteks tambahan yang diberikan: implementasi pencarian ada di
 `lib/pages/notes_page.dart`, aturan filter murni di
 `lib/domain/use_cases/filter_notes_by_title.dart`, dan tes di
-`test/note_search_test.dart`. Repository memuat daftar secara asinkron; fitur
+`test/search_filter_test.dart`. Repository memuat daftar secara asinkron; fitur
 ini hanya mencari judul dari daftar yang sudah dimuat, bukan melakukan query
 database atau mencari isi catatan.
 
@@ -45,14 +45,14 @@ database atau mencari isi catatan.
 | `lib/domain/use_cases/filter_notes_by_title.dart` | Terima + refactor | Menjaga aturan pencarian terisolasi dan pure; API generik mencegah domain bergantung pada model data. |
 | `lib/pages/notes_page.dart` | Terima | Hanya menghubungkan query dan UI; empty state pencarian dibedakan dari daftar kosong dan jalur loading/error dipertahankan. |
 | `lib/providers/notes_provider.dart` | Terima | Provider tetap mengelola state/repository; filter UI tidak dicampur ke operasi penyimpanan atau sync. |
-| `test/note_search_test.dart` | Terima | Menguji kapitalisasi, query kosong, query tak cocok, whitespace, empty state awal dan hasil search, tombol clear, dan fetch error. |
+| `test/search_filter_test.dart` | Terima | Menguji kapitalisasi, query kosong, query tak cocok, whitespace, empty state awal dan hasil search, tombol clear, dan fetch error. |
 
 ## Bukti verifikasi
 
 Perintah yang dijalankan dari folder `week5_offline_notes/`:
 
 ```powershell
-flutter test test\note_search_test.dart
+flutter test test\search_filter_test.dart
 flutter analyze
 ```
 
