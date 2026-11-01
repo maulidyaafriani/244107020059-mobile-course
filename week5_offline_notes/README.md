@@ -116,4 +116,7 @@ Tabel perbandingan AI sendiri menempatkan Drift lebih unggul dari sqflite di ham
 
 Prompt inti, konteks proyek yang relevan, dan batasan privasi untuk fitur
 pencarian judul catatan dicatat di [`docs/ai-log.md`](./docs/ai-log.md).
-Implementasi dan hasil verifikasi menyusul pada praktikum generate.
+Implementasi search, debug/refactor, dan hasil verifikasi sudah dicatat di
+[`docs/ai-log.md`](./docs/ai-log.md). Prompt AI Challenge, output review,
+keputusan temuan, dan bukti pengujian ada di
+[`docs/ai-review-vs-keputusan.md`](./docs/ai-review-vs-keputusan.md).
