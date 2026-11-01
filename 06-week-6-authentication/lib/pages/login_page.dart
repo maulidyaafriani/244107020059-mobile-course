@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:campus_notify/features/auth/domain/usecases/validate_login_input.dart';
 
 import '../data/api_errors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/browser_notification_test_button.dart';
-import 'package:campus_notify/features/auth/domain/usecases/validate_login_input.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});

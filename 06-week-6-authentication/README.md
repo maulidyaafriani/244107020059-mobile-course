@@ -1,5 +1,22 @@
 
 
+## Status mid-semester
+
+**Status: in progress; mid-review belum dinyatakan lulus.** Pemeriksaan
+`flutter analyze` dan `flutter test` lulus untuk aplikasi ini. Checklist dan
+bukti yang masih perlu dilengkapi ada di
+[`docs/review-checklist.md`](./docs/review-checklist.md).
+
+| Peta | Status |
+|---|---|
+| Issue | [#1 Validasi input login](https://github.com/maulidyaafriani/244107020059-mobile-course/issues/1) — ditutup otomatis setelah PR validasi digabung (`Closes #1`). |
+| PR | Belum dibuat. Buka PR `feat/auth-validation` → `develop`, tambahkan reviewer pasangan, lalu isi URL PR di sini setelah tersedia. |
+| Branch yang ditinjau | `feat/auth-validation` (base `develop`). |
+
+CI pull request menjalankan format check, static analysis, dan test untuk
+aplikasi ini ([workflow](../.github/workflows/ci.yml)). Perbarui status setelah
+PR direview, komentar ditindaklanjuti, dan bukti uji aplikasi dilengkapi.
+
 ## Matriks pengujian FCM
 
 Pengujian dilakukan di Chrome (web) dari Firebase Console dengan title/body
@@ -7,9 +24,9 @@ notifikasi dan custom data `route=/pengumuman/3`.
 
 | State | Hasil yang diharapkan | Prosedur uji | Hasil |
 |---|---|---|---|
-| Foreground | Notifikasi lokal/browser muncul, klik menuju `/pengumuman/3` | Biarkan tab aplikasi terbuka, kirim pesan uji | (isi hasil) |
-| Background | Notifikasi sistem/browser muncul, klik membuka aplikasi di rute yang benar | Pindah ke tab lain, kirim pesan, lalu klik notifikasi | (isi hasil) |
-| Terminated | Aplikasi terbuka di rute yang benar lewat `getInitialMessage` | Tutup tab aplikasi, kirim pesan, lalu klik notifikasi | (isi hasil) |
+| Foreground | Notifikasi lokal/browser muncul, klik menuju `/pengumuman/3` | Biarkan tab aplikasi terbuka, kirim pesan uji | Belum diuji manual pada review ini. |
+| Background | Notifikasi sistem/browser muncul, klik membuka aplikasi di rute yang benar | Pindah ke tab lain, kirim pesan, lalu klik notifikasi | Belum diuji manual pada review ini. |
+| Terminated | Aplikasi terbuka di rute yang benar lewat `getInitialMessage` | Tutup tab aplikasi, kirim pesan, lalu klik notifikasi | Belum diuji manual pada review ini. |
 
 Contoh pengisian kolom Hasil (pilih sesuai kenyataan):
 - `Berhasil: notifikasi muncul dan klik membuka aplikasi.`
@@ -24,16 +41,14 @@ Catatan:
 
 ## Bukti token lifecycle
 
-- `screenshots/fcm-console-test.png`: pengujian kirim pesan dari Firebase
-  Console.
-- Screenshot token terpotong (12 karakter pertama + `...`) sebelum dan sesudah
-  data situs dihapus, untuk menunjukkan token berubah dan `onTokenRefresh`
-  memperbarui token.
+- Folder `secrenshoot/` memiliki screenshot aplikasi, tetapi belum ada bukti
+  FCM Console atau perubahan token yang diverifikasi untuk review ini.
 
 ## Dokumentasi AI Challenge
 
 Prompt, output awal AI, daftar perbaikan manual, dan keputusan teknis ada di
-folder `docs/` (lihat `docs/ai-challenge.md`).
+folder `docs/` (lihat [`docs/ai-challenge.md`](./docs/ai-challenge.md) dan
+[`docs/ai-review-vs-keputusan.md`](./docs/ai-review-vs-keputusan.md)).
 
 
 ## Checklist verifikasi
@@ -213,15 +228,15 @@ Presentation  ──►  Domain  ◄──  Data
 
 **Fitur penuh:** `auth` (entity `AuthSession`, interface `AuthRepository`, `AuthRepositoryImpl`, use case `Login`, `Failure`, provider DI).
 
-**Hasil tiga grep sterilitas:**
+**Pemeriksaan ulang sterilitas untuk mid-review:**
 
 | Grep | Hasil |
 |------|-------|
-| Domain bebas Flutter/Dio/Firebase | kosong |
-| Presentation bebas data mentah | kosong |
-| Instansiasi manual di pages/providers | kosong (sebelumnya 1 temuan) |
+| `rg -n 'package:(flutter|dio|sqflite|firebase_)' lib/features/auth/domain` | 0 temuan |
+| `rg -n 'fromJson|toJson|Response<|AuthSessionModel|AnnouncementModel|ApiResponse' lib/pages lib/features/auth/presentation -g '*.dart'` | 0 temuan |
+| `rg -n 'AuthRepositoryImpl\s*\(' lib/pages lib/providers` | 0 temuan; satu instansiasi berada di provider DI `features/auth/presentation/providers/auth_providers.dart`, tempat wiring interface ke implementasi dilakukan |
 
-**Test:** 2 test lulus (`test/login_test.dart`: sukses dan failure dengan repository palsu).
+**Test:** `flutter test` lulus (19 test pada review 1 November 2026).
 
 **Keputusan sadar:** `announcements` belum direfactor karena belum punya alur data; membuat lapisan penuh sekarang adalah over-engineering. Tidak ada `DateFormat` di widget, jadi `core/format.dart` tidak diperlukan.
 

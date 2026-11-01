@@ -41,9 +41,8 @@ class HomePage extends ConsumerWidget {
         ),
       );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(apiErrorMessage(error))),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(apiErrorMessage(error))));
       }
     }
   }
@@ -69,8 +68,7 @@ class HomePage extends ConsumerWidget {
             shrinkWrap: true,
             children: [
               FilledButton(
-                onPressed: () =>
-                    context.go(AppRoutes.announcement('contoh')),
+                onPressed: () => context.go(AppRoutes.announcement('contoh')),
                 child: const Text('Lihat pengumuman contoh'),
               ),
               if (kIsWeb) ...[

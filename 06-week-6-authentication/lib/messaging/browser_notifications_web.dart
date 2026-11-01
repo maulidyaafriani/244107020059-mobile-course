@@ -13,5 +13,5 @@ Future<bool> showBrowserNotification({
   if (permission != 'granted') return false;
 
   web.Notification(title, web.NotificationOptions(body: body));
-   return true;
+  return true;
 }

@@ -2,7 +2,10 @@
   const ValidateLoginInput();
 
   static const int minPasswordLength = 6;
-  static final RegExp _emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+  static final RegExp _emailRegex = RegExp(
+    r'^[^\s@]+@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+'
+    r'[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$',
+  );
 
   String? email(String? value) {
     final v = value?.trim() ?? '';
