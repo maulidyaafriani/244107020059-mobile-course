@@ -111,3 +111,9 @@ Perlu retry logic dengan status per-item (pending/sending/failed/retry-count), y
 4. Bagian mana dari rekomendasi AI yang ditolak, dan mengapa?
 
 Tabel perbandingan AI sendiri menempatkan Drift lebih unggul dari sqflite di hampir semua kriteria teknis (type-safety, reaktivitas otomatis via .watch()). Secara implisit AI mengarah ke Drift sebagai pilihan "lebih baik". Bagian ini saya tolak — saya tetap pakai sqflite murni, bukan karena Drift teknis lebih lemah, tapi karena trade-off praktis: Drift butuh setup build_runner/code generation yang menambah waktu build dan kompleksitas untuk scope tugas sekecil ini (1 tabel utama), sementara reaktivitas otomatisnya belum benar-benar dibutuhkan karena Riverpod sudah menangani refresh state secara manual dengan cukup baik. Keunggulan teknis Drift di atas kertas tidak sepadan dengan biaya adopsinya untuk kasus ini.
+
+## Week 9 — Prompt engineering
+
+Prompt inti, konteks proyek yang relevan, dan batasan privasi untuk fitur
+pencarian judul catatan dicatat di [`docs/ai-log.md`](./docs/ai-log.md).
+Implementasi dan hasil verifikasi menyusul pada praktikum generate.
