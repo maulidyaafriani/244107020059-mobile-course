@@ -111,3 +111,31 @@ Perlu retry logic dengan status per-item (pending/sending/failed/retry-count), y
 4. Bagian mana dari rekomendasi AI yang ditolak, dan mengapa?
 
 Tabel perbandingan AI sendiri menempatkan Drift lebih unggul dari sqflite di hampir semua kriteria teknis (type-safety, reaktivitas otomatis via .watch()). Secara implisit AI mengarah ke Drift sebagai pilihan "lebih baik". Bagian ini saya tolak — saya tetap pakai sqflite murni, bukan karena Drift teknis lebih lemah, tapi karena trade-off praktis: Drift butuh setup build_runner/code generation yang menambah waktu build dan kompleksitas untuk scope tugas sekecil ini (1 tabel utama), sementara reaktivitas otomatisnya belum benar-benar dibutuhkan karena Riverpod sudah menangani refresh state secara manual dengan cukup baik. Keunggulan teknis Drift di atas kertas tidak sepadan dengan biaya adopsinya untuk kasus ini.
+
+## Week 9 — Prompt engineering
+
+Fitur Week 9 adalah pencarian lokal judul catatan, case-insensitive, dengan
+empty state dan tombol untuk menghapus query. Filter murni berada di
+`lib/domain/use_cases/filter_notes_by_title.dart`; tes unit dan widget ada di
+`test/search_filter_test.dart`.
+
+**Stack:** Flutter/Dart, Riverpod, repository yang memakai sqflite pada native
+dan SharedPreferences pada web. Search hanya memfilter catatan yang sudah
+termuat dan tidak mengubah penyimpanan atau sync.
+
+Prompt, konteks, output awal AI, temuan bug, dan hasil verifikasi ada di
+[`docs/ai-log.md`](./docs/ai-log.md). Prompt AI Challenge beserta tabel
+keputusan ada di
+[`docs/ai-review-vs-keputusan.md`](./docs/ai-review-vs-keputusan.md).
+
+Jalankan dari folder project ini:
+
+```powershell
+flutter pub get
+dart format --set-exit-if-changed lib/domain/use_cases/filter_notes_by_title.dart lib/pages/notes_page.dart lib/providers/notes_provider.dart test/search_filter_test.dart
+flutter analyze
+flutter test
+```
+
+**Hasil terakhir:** formatter untuk file terkait bersih, `flutter analyze`
+tanpa temuan, dan seluruh 10 tes lulus (termasuk 6 tes pencarian).

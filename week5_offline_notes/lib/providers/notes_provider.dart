@@ -6,8 +6,9 @@ import 'connectivity_provider.dart';
 
 final noteRepositoryProvider = Provider((ref) => NoteRepository());
 
-final notesProvider =
-    AsyncNotifierProvider<NotesNotifier, List<Note>>(NotesNotifier.new);
+final notesProvider = AsyncNotifierProvider<NotesNotifier, List<Note>>(
+  NotesNotifier.new,
+);
 
 class NotesNotifier extends AsyncNotifier<List<Note>> {
   @override
@@ -27,7 +28,8 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
 
   Future<void> refresh() async {
     state = await AsyncValue.guard(
-        () => ref.read(noteRepositoryProvider).fetchNotes());
+      () => ref.read(noteRepositoryProvider).fetchNotes(),
+    );
   }
 }
 
@@ -41,8 +43,9 @@ final dirtyCountProvider = FutureProvider<int>((ref) {
 
 /// State: jumlah catatan yang barusan berhasil disinkronkan (0 = idle/tidak
 /// ada yang perlu disync). AsyncLoading = sedang proses sync.
-final syncStatusProvider =
-    AsyncNotifierProvider<SyncNotifier, int>(SyncNotifier.new);
+final syncStatusProvider = AsyncNotifierProvider<SyncNotifier, int>(
+  SyncNotifier.new,
+);
 
 class SyncNotifier extends AsyncNotifier<int> {
   @override
