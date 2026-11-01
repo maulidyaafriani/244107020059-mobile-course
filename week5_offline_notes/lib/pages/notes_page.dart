@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/local/note.dart';
+import '../domain/use_cases/filter_notes_by_title.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/notes_provider.dart';
 
-class NotesPage extends ConsumerWidget {
+class NotesPage extends ConsumerStatefulWidget {
   const NotesPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NotesPage> createState() => _NotesPageState();
+}
+
+class _NotesPageState extends ConsumerState<NotesPage> {
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final notesAsync = ref.watch(notesProvider);
     final dirtyCountAsync = ref.watch(dirtyCountProvider);
     final forceOffline = ref.watch(forceOfflineProvider);
@@ -16,9 +32,9 @@ class NotesPage extends ConsumerWidget {
 
     ref.listen(syncStatusProvider, (previous, next) {
       next.whenOrNull(
-        error: (err, _) => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sync gagal: $err')),
-        ),
+        error: (err, _) =>
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text('Sync gagal: $err'))),
         data: (count) {
           if (count > 0) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -36,8 +52,8 @@ class NotesPage extends ConsumerWidget {
           IconButton(
             tooltip: forceOffline ? 'Simulasi: Offline' : 'Simulasi: Online',
             icon: Icon(forceOffline ? Icons.cloud_off : Icons.cloud_done),
-            onPressed: () => ref.read(forceOfflineProvider.notifier).state =
-                !forceOffline,
+            onPressed: () =>
+                ref.read(forceOfflineProvider.notifier).state = !forceOffline,
           ),
           dirtyCountAsync.maybeWhen(
             data: (count) => count == 0
@@ -69,28 +85,7 @@ class NotesPage extends ConsumerWidget {
         ],
       ),
       body: notesAsync.when(
-        data: (notes) => notes.isEmpty
-            ? const Center(child: Text('Belum ada catatan'))
-            : ListView.builder(
-                itemCount: notes.length,
-                itemBuilder: (context, index) {
-                  final note = notes[index];
-                  return ListTile(
-                    title: Text(note.title),
-                    subtitle: Text(note.body),
-                    leading: Icon(
-                      Icons.circle,
-                      size: 10,
-                      color: note.dirty ? Colors.orange : Colors.green,
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      onPressed: () =>
-                          ref.read(notesProvider.notifier).remove(note.id!),
-                    ),
-                  );
-                },
-              ),
+        data: _buildNotes,
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Gagal memuat: $e')),
       ),
@@ -98,6 +93,68 @@ class NotesPage extends ConsumerWidget {
         onPressed: () => _showAddDialog(context, ref),
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _buildNotes(List<Note> notes) {
+    if (notes.isEmpty) return const Center(child: Text('Belum ada catatan'));
+
+    final filteredNotes = filterNotesByTitle(
+      notes,
+      _query,
+      titleOf: (note) => note.title,
+    );
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: TextField(
+            key: const ValueKey('notes-search-field'),
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Cari judul catatan',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _query.isEmpty
+                  ? null
+                  : IconButton(
+                      key: const ValueKey('clear-note-search'),
+                      tooltip: 'Hapus pencarian',
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() => _query = '');
+                      },
+                      icon: const Icon(Icons.clear),
+                    ),
+              border: const OutlineInputBorder(),
+            ),
+            onChanged: (value) => setState(() => _query = value),
+          ),
+        ),
+        Expanded(
+          child: filteredNotes.isEmpty
+              ? const Center(child: Text('Tidak ada catatan yang cocok'))
+              : ListView.builder(
+                  itemCount: filteredNotes.length,
+                  itemBuilder: (context, index) {
+                    final note = filteredNotes[index];
+                    return ListTile(
+                      title: Text(note.title),
+                      subtitle: Text(note.body),
+                      leading: Icon(
+                        Icons.circle,
+                        size: 10,
+                        color: note.dirty ? Colors.orange : Colors.green,
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () =>
+                            ref.read(notesProvider.notifier).remove(note.id!),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 

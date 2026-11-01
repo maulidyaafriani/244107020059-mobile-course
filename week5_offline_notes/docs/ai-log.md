@@ -2,10 +2,9 @@
 
 ## Status
 
-Praktikum 1 selesai: prompt inti dan konteks proyek sudah disiapkan untuk
-fitur pencarian judul catatan. Implementasi fitur, output awal AI, verifikasi,
-dan hasil tes dicatat setelah tahap generate dan review berikutnya; tidak ada
-hasil yang diklaim sebelum dijalankan.
+Praktikum 1 selesai: prompt inti dan konteks proyek sudah disiapkan.
+Praktikum 2 selesai: fitur pencarian judul sudah dibuat, diuji otomatis, dan
+di-smoke-test pada aplikasi web di browser.
 
 ## Lima slot prompt
 
@@ -139,5 +138,80 @@ Output:
 | Prompt 5 slot | Selesai |
 | Konteks kode relevan dan versi package | Selesai |
 | Pemeriksaan secret | Tidak menempel token, API key, password, atau konfigurasi Firebase |
-| Output awal AI | Menunggu tahap generate (Praktikum 2) |
-| Implementasi dan tes search | Belum dikerjakan pada Praktikum 1 |
+| Output awal AI | Draf awal di bawah; cacat case-sensitive dan whitespace ditemukan lewat tes |
+| Implementasi dan tes search | Selesai; 4 tes filter dan 2 tes UI ditambahkan |
+| Smoke test web | Lulus: query `BELANJA` menampilkan empty state; `OKE` menemukan judul `oke baik`; tombol clear dan query whitespace mengembalikan daftar |
+
+## Output awal AI
+
+Implementasi awal yang dihasilkan mengikuti repository/state yang sudah ada,
+tanpa mengubah repository atau skema:
+
+```dart
+List<Note> filterNotesByTitle(List<Note> notes, String query) {
+  if (query.isEmpty) return notes;
+  return notes.where((note) => note.title.contains(query)).toList();
+}
+```
+
+UI menambahkan field pencarian hanya saat daftar memuat catatan, memfilter
+daftar yang sudah dimuat, mempertahankan urutan hasil, dan membedakan teks
+empty state daftar awal dari empty state hasil pencarian. Query dapat dihapus
+melalui tombol clear.
+
+## Verifikasi, bug, dan keputusan
+
+Tes awal gagal sebelum perbaikan:
+
+- `BELANJA` tidak menemukan `Belanja Bulanan` dan `Daftar Belanja`, karena
+  `String.contains` pada draf awal case-sensitive.
+- Query `'   '` menghasilkan daftar kosong, bukan menganggap input hanya
+  whitespace sebagai query kosong.
+
+Filter diperbaiki dengan `trim().toLowerCase()` pada query dan
+`toLowerCase()` pada judul. Repository, database, model, sync, dan dependencies
+tidak diubah. Hasil dibuktikan oleh tes pencarian case-insensitive, query
+kosong, query tak cocok, dan whitespace; widget test membuktikan empty state
+awal, empty state pencarian, menghapus query untuk memulihkan daftar, dan
+mempertahankan pesan error fetch.
+
+## Praktikum 3 — Debug dan refactor
+
+Langkah reproduksi bug draf: jalankan tes case-insensitive dengan query
+`BELANJA` terhadap judul `Belanja Bulanan`, lalu jalankan tes whitespace
+dengan query `'   '`. Keduanya gagal pada draf awal karena memakai
+`contains` langsung dan hanya memeriksa `query.isEmpty`. Perbaikannya
+diverifikasi oleh tes regresi yang sama setelah normalisasi query dan judul.
+
+Aturan pencarian dipindahkan ke fungsi murni di
+`lib/domain/use_cases/filter_notes_by_title.dart`. Fungsi menerima pemilih
+judul agar layer domain tidak mengimpor Flutter, Riverpod, ataupun model data
+yang juga menangani serialisasi. Widget hanya meneruskan daftar, query, dan
+judul; provider tetap mengelola state serta repository. Tidak ada akses
+database dari widget, dan jalur loading/error daftar tetap dipertahankan.
+
+Verifikasi setelah refactor: `flutter analyze` lulus tanpa temuan dan
+`flutter test` lulus dengan 10 tes. `dart format --set-exit-if-changed` lulus
+untuk seluruh file Dart yang diubah. Pemeriksaan format ke seluruh project
+menemukan 15 file lama lain yang belum terformat; file-file itu tidak diubah
+agar PR pencarian tetap fokus. Hot restart pada app web yang sedang berjalan
+gagal di Chrome DevTools, tetapi hot reload berhasil.
+
+## Perintah verifikasi
+
+Jalankan dari folder `week5_offline_notes/`:
+
+```powershell
+dart format --set-exit-if-changed lib test
+flutter analyze
+flutter test
+```
+
+Hasil terakhir:
+
+- `flutter analyze`: bersih.
+- `flutter test`: 10 tes lulus.
+- `dart format --set-exit-if-changed` pada file fitur/tes: bersih.
+- Smoke test manual dilakukan pada Chrome web dengan data sementara `oke baik`.
+- Hot restart melalui DTD gagal pada Chrome DevTools; aplikasi kemudian
+  dijalankan ulang, smoke test dilakukan, dan hot reload berikutnya berhasil.
