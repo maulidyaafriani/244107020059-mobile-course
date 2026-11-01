@@ -6,8 +6,9 @@ import '../features/auth/presentation/providers/auth_providers.dart';
 
 final tokenStoreProvider = Provider<TokenStore>((ref) => TokenStore());
 
-final authStateProvider =
-    AsyncNotifierProvider<AuthNotifier, bool>(AuthNotifier.new);
+final authStateProvider = AsyncNotifierProvider<AuthNotifier, bool>(
+  AuthNotifier.new,
+);
 
 class AuthNotifier extends AsyncNotifier<bool> {
   @override
