@@ -4,6 +4,7 @@ class AppRoutes {
   static const home = '/';
   static const login = '/login';
   static const loading = '/loading';
+  static const aiChat = '/ai-chat';
   static const announcementPattern = '/pengumuman/:id';
 
   static String announcement(String id) => '/pengumuman/$id';

@@ -35,6 +35,33 @@ Catatan:
 Prompt, output awal AI, daftar perbaikan manual, dan keputusan teknis ada di
 folder `docs/` (lihat `docs/ai-challenge.md`).
 
+## Praktikum Week 10 — Chat AI (Gemini)
+
+Home menyediakan rute Chat AI. Fitur mengirim percakapan anonim melalui
+Gemini streaming (`gemini-3.6-flash`); API key dimasukkan pengguna dari tombol
+kunci dan disimpan dengan `flutter_secure_storage`. Tidak ada API key di source
+code, dan API key FCM/auth tidak digunakan atau dikirim ke Gemini.
+
+Sebelum mencoba, buat API key sendiri di
+[Google AI Studio](https://aistudio.google.com/apikey), lalu masukkan di layar
+Chat AI. Jangan commit, screenshot, atau bagikan kunci. Pesan chat dikirim ke
+Google Gemini; jangan masukkan NIK, nomor telepon, alamat, data login, nilai,
+tagihan, atau informasi sensitif. Pemakaian API dapat menghabiskan kuota atau
+menimbulkan biaya. Penyimpanan aman di perangkat tidak membuat API key aman
+untuk ditanam dalam aplikasi publik; untuk rilis produksi, gunakan backend
+proxy dengan rate limit dan kontrol akses.
+
+Pengujian lokal:
+
+```powershell
+flutter test test\ai_chat_test.dart
+flutter analyze
+```
+
+Tes tidak memanggil layanan eksternal. Tanpa key atau koneksi, aplikasi
+menampilkan error yang dapat ditindaklanjuti; pengguna dapat menambahkan key,
+mencoba ulang, atau menghapus key tersimpan. Implementasi service dan keputusan
+privasi dicatat di `docs/ai-feature-integration.md`.
 
 ## Checklist verifikasi
 

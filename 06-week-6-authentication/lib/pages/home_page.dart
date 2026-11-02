@@ -73,6 +73,13 @@ class HomePage extends ConsumerWidget {
                     context.go(AppRoutes.announcement('contoh')),
                 child: const Text('Lihat pengumuman contoh'),
               ),
+              const SizedBox(height: 12),
+              FilledButton.tonalIcon(
+                key: const ValueKey('open-ai-chat'),
+                onPressed: () => context.go(AppRoutes.aiChat),
+                icon: const Icon(Icons.chat),
+                label: const Text('Chat dengan AI'),
+              ),
               if (kIsWeb) ...[
                 const SizedBox(height: 24),
                 const Text(
