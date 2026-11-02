@@ -20,6 +20,9 @@
 - Tombol mikrofon merekam PCM 16 kHz mono dan meminta Gemini mentranskripsikan
   audio. Data media dikirim sebagai `inlineData` base64 bersama prompt.
 - Android dan iOS mendeklarasikan izin kamera/mikrofon/galeri yang diperlukan.
+- Kegagalan ditampilkan sebagai pesan error dan menyediakan tombol coba lagi.
+  Retry mengirim ulang giliran yang gagal tanpa menggandakan pesan di UI;
+  hapus percakapan untuk memulai sesi baru dan mengurangi konteks berikutnya.
 
 ## Privasi, biaya, dan batas keamanan
 
@@ -33,6 +36,12 @@
 - Lampiran gambar dan audio dibatasi 5 MB; data dikirim ke Gemini dan dapat
   memakai kuota/biaya. Hindari gambar dokumen identitas atau rekaman berisi
   informasi pribadi.
+- Panjang pesan dibatasi 4.000 karakter. Batas client ini bukan pengganti
+  kuota/rate limit per pengguna; penerapan produksi harus membatasi pemakaian
+  di backend karena batas di aplikasi dapat dilewati.
+- Tidak ada jawaban AI palsu saat offline: aplikasi menampilkan error agar
+  pengguna dapat memeriksa koneksi, API key, dan kuota lalu mencoba kembali.
+  Tidak ada konten offline lokal yang relevan untuk menggantikan jawaban AI.
 - API key dikirim ke Gemini melalui HTTPS dalam header `x-goog-api-key`.
   `flutter_secure_storage` melindungi penyimpanan lokal, tetapi tidak membuat
   kunci client-side aman dari ekstraksi pada aplikasi yang didistribusikan.
@@ -54,9 +63,8 @@ flutter analyze
 
 Tes memeriksa API key wajib sebelum request, penyimpanan key trim/tidak
 kosong, parsing event SSE valid/malformed, serialisasi lampiran gambar/audio,
-serta alur UI mengirim pertanyaan dan merender jawaban yang datang sebagai
-beberapa chunk. Tidak ada tes yang mengirim request jaringan atau memakai API
-key sungguhan.
+alur UI streaming, serta retry tanpa menggandakan pesan. Tidak ada tes yang
+mengirim request jaringan atau memakai API key sungguhan.
 
 Untuk tes manual: jalankan `flutter run -d chrome`, buka Chat AI dari Home,
 atur key sendiri, kirim pertanyaan umum tanpa data pribadi, amati teks

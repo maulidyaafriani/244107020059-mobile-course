@@ -61,7 +61,9 @@ flutter analyze
 Tes tidak memanggil layanan eksternal. Tanpa key atau koneksi, aplikasi
 menampilkan error yang dapat ditindaklanjuti; pengguna dapat menambahkan key,
 mencoba ulang, atau menghapus key tersimpan. Implementasi service dan keputusan
-privasi dicatat di `docs/ai-feature-integration.md`.
+privasi dicatat di `docs/ai-feature-integration.md`. Prompt sistem, prompt
+pengguna, ringkasan output awal AI, keputusan, dan bukti serialisasi tercatat di
+`docs/ai-log.md`.
 
 Chat AI juga mendukung OCR/deskripsi gambar dari galeri atau kamera, serta
 transkripsi audio dari mikrofon. Lampiran maksimal 5 MB dikirim ke Gemini
@@ -69,6 +71,35 @@ bersama riwayat sesi; jangan unggah dokumen pribadi atau rekaman sensitif.
 Untuk pengujian manual media, jalankan pada perangkat/browser yang mendukung
 kamera dan mikrofon, berikan izin saat diminta, lalu gunakan tombol gambar atau
 mikrofon di layar Chat AI.
+
+Screenshot hasil chat tanpa API key atau data sensitif:
+`screenshots/week10-ai-chat-response.png`. Pengujian kamera/mikrofon langsung
+dan Gemini dengan key pribadi perlu dilakukan di perangkat/browser sebelum
+mengklaim hasil manual; tes otomatis menggunakan fake transport.
+
+### Risiko dan mitigasi AI
+
+| Risiko | Mitigasi |
+|---|---|
+| Data pribadi atau isi dokumen bocor ke layanan AI | Peringatan di UI; jangan kirim NIK, kontak, data login, nilai, tagihan, atau dokumen identitas. |
+| API key terekspos dari aplikasi client | Key dimasukkan pengguna dan disimpan secure storage; jangan commit atau screenshot key. Untuk produksi gunakan backend tepercaya. |
+| Biaya/kuota meningkat | Input dibatasi 4.000 karakter dan media 5 MB; hapus percakapan untuk mengurangi konteks. Terapkan rate limit dan batas biaya di backend sebelum rilis publik. |
+| Layanan/koneksi gagal | Tampilkan error dan tombol coba lagi; tidak membuat jawaban palsu. Coba lagi mengirim giliran gagal tanpa menggandakan pesan. |
+| Model memberi jawaban tidak relevan | Tampilkan sebagai keluaran AI, validasi informasi penting secara manual, jangan gunakan sebagai keputusan final untuk data sensitif. |
+
+### Refleksi Week 10
+
+- **Fitur dan alasan:** Chat Gemini dengan OCR/deskripsi gambar dan transkripsi
+  audio dipilih untuk mengintegrasikan multimodal AI di aplikasi Campus Notify.
+- **Privasi:** API key berasal dari pengguna, disimpan dengan secure storage,
+  dan tidak ditanam dalam source. Peringatan mengingatkan pengguna agar tidak
+  mengirim data pribadi. Pesan/lampiran dikirim ke Gemini; jangan unggah
+  dokumen sensitif.
+- **Fallback:** Saat error, tampilkan pesan dan tombol coba lagi. Tidak ada
+  jawaban offline palsu; jika layanan gagal, fitur AI memang tidak tersedia.
+- **Pelajaran UX:** Streaming memberi respons bertahap, tetapi status loading,
+  error yang dapat ditindaklanjuti, persetujuan izin media, ukuran file, dan
+  penjelasan privasi sama pentingnya dengan jawaban AI.
 
 ## Checklist verifikasi
 

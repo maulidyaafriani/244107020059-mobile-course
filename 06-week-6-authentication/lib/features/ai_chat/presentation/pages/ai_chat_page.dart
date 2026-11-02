@@ -32,6 +32,7 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
   bool _isSending = false;
   bool _isRecording = false;
   bool _recordingTooLarge = false;
+  static const _maxPromptChars = 4000;
   static const _maxMediaBytes = 5 * 1024 * 1024;
 
   @override
@@ -55,6 +56,10 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
     if ((message.isEmpty && attachment == null) || _isSending || _isRecording) {
       return;
     }
+    if (message.length > _maxPromptChars) {
+      _showMessage('Pesan terlalu panjang. Batasnya 4.000 karakter.');
+      return;
+    }
 
     _inputController.clear();
     setState(() {
@@ -73,6 +78,25 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
       );
     });
 
+    await _requestReply();
+  }
+
+  Future<void> _retryLastMessage() async {
+    if (_isSending ||
+        _isRecording ||
+        _conversation.isEmpty ||
+        _conversation.last.role != ChatRole.user) {
+      return;
+    }
+    setState(() {
+      _error = null;
+      _streamingText = '';
+      _isSending = true;
+    });
+    await _requestReply();
+  }
+
+  Future<void> _requestReply() async {
     try {
       await for (final chunk
           in ref
@@ -89,14 +113,31 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
       });
     } on AiChatException catch (error) {
       if (!mounted) return;
-      setState(() => _error = error.message);
+      setState(() {
+        _error = error.message;
+        _streamingText = '';
+      });
     } on Exception catch (error) {
       if (!mounted) return;
-      setState(() => _error = 'Permintaan gagal diproses: $error');
+      setState(() {
+        _error = 'Permintaan gagal diproses: $error';
+        _streamingText = '';
+      });
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
     _scrollToBottom();
+  }
+
+  void _clearConversation() {
+    setState(() {
+      _conversation.clear();
+      _streamingText = '';
+      _error = null;
+      _pendingImage = null;
+      _pendingImageMimeType = null;
+      _inputController.clear();
+    });
   }
 
   Future<void> _pickImage(ImageSource source, {required String prompt}) async {
@@ -329,6 +370,12 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
         title: const Text('Chat AI'),
         actions: [
           IconButton(
+            key: const ValueKey('clear-ai-conversation'),
+            tooltip: 'Hapus percakapan',
+            onPressed: _isSending || _isRecording ? null : _clearConversation,
+            icon: const Icon(Icons.delete_sweep_outlined),
+          ),
+          IconButton(
             key: const ValueKey('manage-gemini-api-key'),
             tooltip: 'Atur API key',
             onPressed: _manageApiKey,
@@ -341,8 +388,8 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
           MaterialBanner(
             content: const Text(
               'Jangan kirim NIK, nomor telepon, alamat, data login, atau '
-              'informasi sensitif. Pesan dikirim ke Gemini dan tidak disimpan '
-              'oleh aplikasi ini.',
+              'informasi sensitif. Pesan dan lampiran dikirim ke Gemini dan '
+              'tidak disimpan oleh aplikasi ini.',
             ),
             leading: const Icon(Icons.privacy_tip_outlined),
             actions: const [SizedBox.shrink()],
@@ -382,11 +429,27 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
             ),
           if (_error case final error?)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                error,
-                key: const ValueKey('ai-chat-error'),
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      error,
+                      key: const ValueKey('ai-chat-error'),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                  if (_conversation.isNotEmpty &&
+                      _conversation.last.role == ChatRole.user)
+                    TextButton.icon(
+                      key: const ValueKey('retry-ai-message'),
+                      onPressed: _isSending ? null : _retryLastMessage,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Coba lagi'),
+                    ),
+                ],
               ),
             ),
           if (_pendingImage case final image?)
@@ -446,6 +509,13 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
                       controller: _inputController,
                       minLines: 1,
                       maxLines: 4,
+                      maxLength: _maxPromptChars,
+                      buildCounter: (
+                        context, {
+                        required currentLength,
+                        required isFocused,
+                        maxLength,
+                      }) => null,
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _sendMessage(),
                       decoration: const InputDecoration(
