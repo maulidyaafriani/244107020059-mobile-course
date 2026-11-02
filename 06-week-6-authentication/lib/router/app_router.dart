@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/ai_chat/presentation/pages/ai_chat_page.dart';
 import '../pages/announcement_page.dart';
 import '../pages/home_page.dart';
 import '../pages/login_page.dart';
@@ -44,6 +45,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.home,
         builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: AppRoutes.aiChat,
+        builder: (context, state) => const AiChatPage(),
       ),
       GoRoute(
         path: AppRoutes.announcementPattern,

@@ -24,6 +24,12 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Kamera digunakan untuk mengambil gambar yang akan dianalisis.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Mikrofon digunakan untuk merekam audio yang akan ditranskripsikan.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Galeri digunakan untuk memilih gambar yang akan dianalisis.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIBackgroundModes</key>
