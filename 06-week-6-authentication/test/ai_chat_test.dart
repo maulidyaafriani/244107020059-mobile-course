@@ -99,6 +99,40 @@ void main() {
       );
     });
 
+    test('serializes image and audio attachments as Gemini inline data', () {
+      final imageTurn = ChatTurn(
+        role: ChatRole.user,
+        text: 'Baca gambar',
+        mediaBytes: Uint8List.fromList([0, 1, 2]),
+        mediaMimeType: 'image/png',
+      );
+      final audioTurn = ChatTurn(
+        role: ChatRole.user,
+        text: 'Transkripsikan',
+        mediaBytes: Uint8List.fromList([3, 4]),
+        mediaMimeType: 'audio/pcm;rate=16000',
+      );
+
+      expect(imageTurn.toGeminiContent(), {
+        'role': 'user',
+        'parts': [
+          {'text': 'Baca gambar'},
+          {
+            'inlineData': {'mimeType': 'image/png', 'data': 'AAEC'},
+          },
+        ],
+      });
+      expect(audioTurn.toGeminiContent(), {
+        'role': 'user',
+        'parts': [
+          {'text': 'Transkripsikan'},
+          {
+            'inlineData': {'mimeType': 'audio/pcm;rate=16000', 'data': 'AwQ='},
+          },
+        ],
+      });
+    });
+
     test('streams text from chunked SSE events', () async {
       final transport = FakeGeminiStreamTransport(
         responseBody: Stream.fromIterable([

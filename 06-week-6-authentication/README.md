@@ -63,6 +63,13 @@ menampilkan error yang dapat ditindaklanjuti; pengguna dapat menambahkan key,
 mencoba ulang, atau menghapus key tersimpan. Implementasi service dan keputusan
 privasi dicatat di `docs/ai-feature-integration.md`.
 
+Chat AI juga mendukung OCR/deskripsi gambar dari galeri atau kamera, serta
+transkripsi audio dari mikrofon. Lampiran maksimal 5 MB dikirim ke Gemini
+bersama riwayat sesi; jangan unggah dokumen pribadi atau rekaman sensitif.
+Untuk pengujian manual media, jalankan pada perangkat/browser yang mendukung
+kamera dan mikrofon, berikan izin saat diminta, lalu gunakan tombol gambar atau
+mikrofon di layar Chat AI.
+
 ## Checklist verifikasi
 
 | Pertanyaan | Temuan | Perbaikan / bukti |

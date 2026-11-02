@@ -52,7 +52,9 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
     final message = question.isEmpty ? (prompt ?? '') : question;
     final attachment = mediaBytes ?? _pendingImage;
     final mimeType = mediaMimeType ?? _pendingImageMimeType;
-    if ((message.isEmpty && attachment == null) || _isSending) return;
+    if ((message.isEmpty && attachment == null) || _isSending || _isRecording) {
+      return;
+    }
 
     _inputController.clear();
     setState(() {
@@ -105,16 +107,16 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
         maxWidth: 1600,
       );
       if (image == null || !mounted) return;
-      final bytes = await image.readAsBytes();
-      if (bytes.length > _maxMediaBytes) {
+      if (await image.length() > _maxMediaBytes) {
         _showMessage('Gambar terlalu besar. Batas ukuran adalah 5 MB.');
         return;
       }
-      final mimeType = switch (image.mimeType) {
-        'image/png' => 'image/png',
-        'image/webp' => 'image/webp',
-        _ => 'image/jpeg',
-      };
+      final bytes = await image.readAsBytes();
+      final mimeType = image.mimeType;
+      if (mimeType == null || !mimeType.startsWith('image/')) {
+        _showMessage('Format gambar tidak dikenali. Pilih gambar lain.');
+        return;
+      }
       setState(() {
         _pendingImage = bytes;
         _pendingImageMimeType = mimeType;
@@ -143,8 +145,7 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
               key: const ValueKey('describe-image'),
               leading: const Icon(Icons.image_search),
               title: const Text('Deskripsikan gambar'),
-              onTap: () =>
-                  Navigator.pop(context, _ImageAction.galleryDescribe),
+              onTap: () => Navigator.pop(context, _ImageAction.galleryDescribe),
             ),
             ListTile(
               key: const ValueKey('capture-image'),
@@ -196,7 +197,8 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
           return;
         }
         await _sendMessage(
-          prompt: 'Transkripsikan ucapan dalam audio ini dengan akurat. '
+          prompt:
+              'Transkripsikan ucapan dalam audio ini dengan akurat. '
               'Keluarkan teks transkripsi saja.',
           mediaBytes: bytes,
           mediaMimeType: 'audio/pcm;rate=16000',
@@ -427,8 +429,9 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
                   IconButton(
                     key: const ValueKey('attach-ai-image'),
                     tooltip: 'Pilih gambar untuk OCR atau deskripsi',
-                    onPressed:
-                        _isSending || _isRecording ? null : _showImageActions,
+                    onPressed: _isSending || _isRecording
+                        ? null
+                        : _showImageActions,
                     icon: const Icon(Icons.image_outlined),
                   ),
                   IconButton(
@@ -455,7 +458,7 @@ class _AiChatPageState extends ConsumerState<AiChatPage> {
                   IconButton.filled(
                     key: const ValueKey('send-ai-message'),
                     tooltip: 'Kirim',
-                    onPressed: _isSending ? null : _sendMessage,
+                    onPressed: _isSending || _isRecording ? null : _sendMessage,
                     icon: const Icon(Icons.send),
                   ),
                 ],
